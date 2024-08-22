@@ -1,0 +1,47 @@
+<div class="main-container">
+  <div class="left-panel">
+    <img src="common.png" alt="Illustration" />
+  </div>
+  <div class="right-panel">
+    <h2>Logo</h2>
+    <div class="right_inner">
+      <form [formGroup]="ChangePassForm" (ngSubmit)="onSubmit()" class="login-form">
+        <h2>Change Password</h2>
+        <div class="form-group">
+          <label for="oldPass">Enter your old password</label>
+          <input
+            type="password"
+            id="oldPass"
+            formControlName="oldPass"
+            class="form-control"
+            placeholder="Old Password"
+          />
+          <div *ngIf="ChangePassForm.get('oldPass')?.invalid && ChangePassForm.get('oldPass')?.touched" class="error-message">
+            Old Password is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">Enter your new password</label>
+          <input
+            type="password"
+            id="newPassword"
+            formControlName="newPassword"
+            class="form-control"
+            placeholder="New Password"
+          />
+          <div *ngIf="ChangePassForm.get('newPassword')?.invalid && ChangePassForm.get('newPassword')?.touched" class="error-message">
+            Password must be at least 8 characters long and contain at least one uppercase letter, one
+            number, and one special character.
+          </div>
+        </div>
+
+        <button type="submit" class="btn">Save</button>
+      </form>
+      <p>
+        Click here if forgot password
+        <a href="/user/forgot" (click)="forgotPass()">click here</a>
+      </p>
+    </div>
+  </div>
+</div>

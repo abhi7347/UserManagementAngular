@@ -1,0 +1,268 @@
+<!-- Navbar -->
+<!-- <div class="navbar">
+  <div class="nav-container">
+      <div class="nav-brand">Brand</div>
+      <div class="nav-links">
+          <a href="#Dashboard">Dashboard</a>
+          <a href="#manage-user">Manage User</a>
+      </div>
+  </div>
+</div> -->
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <a href="javascript:void(0)" (click)="Dashboard = true; manageUser = false;"><img src="layout-dashboard.png" style="background: #ffff;" alt="">Dashboard</a>
+  <a href="javascript:void(0)" (click)="ManageUser()"><img src="manage-user.png" alt="">Manage User</a>
+</div>
+
+<div class="header">
+  <h2 id="lima-tayler">Hi, Abhishek Tiwari 👋</h2>
+</div>
+
+<!-- Main Content -->
+<section class="dashboard" *ngIf="Dashboard">
+  <div class="dashboard-content">
+    <div class="dashboard-cards">
+      <div class="card active-card" (click)="showActiveInactiveUsers(true)">
+        <img src="active.png" alt="">
+        <h4>Active</h4>
+        <p>{{activeCount}}</p>
+      </div>
+      <div class="card inactive-card" (click)="showActiveInactiveUsers(false)">
+        <img src="inactive.png" alt="">
+        <h4>Inactive</h4>
+        <p>{{inActiveCount}}</p>
+      </div>
+    </div>
+    <div class="userlist">
+      <h4>User List</h4>
+      <h4 (click)="exportToExcel()">Download Excel</h4>
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="user-table table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>First Name <img src="preview.png" alt="" (click)="sortData('FirstName')"></th>
+          <th>Middle Name <img src="preview.png" alt="" (click)="sortData('MiddleName')"></th>
+          <th>Last Name <img src="preview.png" alt="" (click)="sortData('LastName')"></th>
+          <th>DOB <img src="preview.png" alt="" (click)="sortData('Dob')"></th>
+          <th>Email</th>
+          <th>Contact No</th>
+          <th>Alternate Phone</th>
+          <th>Date Of Joining <img src="preview.png" alt="" (click)="sortData('DateOfJoining')"></th>
+          <th>City <img src="preview.png" alt="" (click)="sortData('City')"></th>
+          <th>State <img src="preview.png" alt="" (click)="sortData('State')"></th>
+          <th>Country <img src="preview.png" alt="" (click)="sortData('Country')"></th>
+          <th>ZipCode</th>
+          <th>Delete</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.FirstName }}</td>
+          <td>{{ user.MiddleName }}</td>
+          <td>{{ user.LastName }}</td>
+          <td>{{ user.Dob }}</td>
+          <td>{{ user.Email }}</td>
+          <td>{{ user.Phone }}</td>
+          <td>{{ user.AlternatePhone }}</td>
+          <td>{{ user.DateOfJoining }}</td>
+          <!-- Iterate through addresses -->
+          <td>
+            <ng-container *ngFor="let address of user.AddresssAbhis">
+              {{ address.City }}<br>
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngFor="let address of user.AddresssAbhis">
+              {{ address.State }}<br>
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngFor="let address of user.AddresssAbhis">
+              {{ address.Country }}<br>
+            </ng-container>
+          </td>
+          <td>
+            <ng-container *ngFor="let address of user.AddresssAbhis">
+              {{ address.ZipCode }}<br>
+            </ng-container>
+          </td>
+          
+          <td>
+            <button (click)="deleteUser(user.UserId)">Delete</button>
+          </td>
+          <td>
+            <button (click)="editUser(user.UserId)">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <!-- Pagination code here -->
+  <nav>
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="pageNumber === 1">
+        <a class="page-link" (click)="onPageChange(pageNumber - 1)">Prev</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link">{{pageNumber}}</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" (click)="onPageChange(pageNumber + 1)">Next</a>
+      </li>
+    </ul>
+  </nav>
+</section>
+
+
+<section class="manage-user" *ngIf="manageUser">
+  <div class="manage-user-content">
+    <h2>Add User</h2>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="userImage">Upload User Image</label>
+        <div>
+          <img [src]="ImagePath" alt="" width="100px" height="100px" id="imageSrc">
+          <input id="userImage" type="file" formControlName="userImage" (change)="onFileChange($event)" class="form-control"/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input id="firstName" formControlName="firstName" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('firstName')?.touched && userForm.get('firstName')?.hasError('required')">First Name is required.</small>
+            <small class="text-danger" *ngIf="userForm.get('firstName')?.touched && userForm.get('firstName')?.hasError('minlength')">Minimum 2 characters required.</small>
+            <small class="text-danger" *ngIf="userForm.get('firstName')?.touched && userForm.get('firstName')?.hasError('maxlength')">Maximum 50 characters allowed.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input id="middleName" formControlName="middleName" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('middleName')?.touched && userForm.get('middleName')?.hasError('minlength')">Minimum 2 characters required.</small>
+            <small class="text-danger" *ngIf="userForm.get('middleName')?.touched && userForm.get('middleName')?.hasError('maxlength')">Maximum 50 characters allowed.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" formControlName="lastName" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.hasError('required')">Last Name is required.</small>
+            <small class="text-danger" *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.hasError('minlength')">Minimum 2 characters required.</small>
+            <small class="text-danger" *ngIf="userForm.get('lastName')?.touched && userForm.get('lastName')?.hasError('maxlength')">Maximum 50 characters allowed.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" formControlName="gender" class="form-control">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <small class="text-danger" *ngIf="userForm.get('gender')?.touched && userForm.get('gender')?.hasError('required')">Gender is required.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input id="dob" type="date" formControlName="dob" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('dob')?.touched && userForm.get('dob')?.hasError('required')">Date of Birth is required.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" formControlName="email" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('email')?.touched && userForm.get('email')?.hasError('required')">Invalid email format.</small>
+            <small class="text-danger" *ngIf="userForm.get('email')?.touched && userForm.get('email')?.hasError('email')">Invalid email format.</small>
+            <small class="text-danger" *ngIf="userForm.get('email')?.touched && userForm.get('email')?.hasError('minlength')">Minimum 5 characters required.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="dateOfJoining">Date of Joining</label>
+            <input id="dateOfJoining" type="date" formControlName="dateOfJoining" class="form-control"/>
+            <small class="text-danger" *ngIf="userForm.get('dateOfJoining')?.touched && userForm.get('dateOfJoining')?.hasError('required')">Date of Joining is required.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" formControlName="phone" required class="form-control" onkeypress="return event.charCode>=48 &&
+          event.charCode<=57"/>
+            <small class="text-danger" *ngIf="userForm.get('phone')?.touched && userForm.get('phone')?.hasError('required')">Phone Number is required</small>
+            <small class="text-danger" *ngIf="userForm.get('phone')?.touched && userForm.get('phone')?.hasError('minlength')">Minimum 10 characters allowed.</small>
+            <small class="text-danger" *ngIf="userForm.get('phone')?.touched && userForm.get('phone')?.hasError('maxlength')">Maximum 10 characters allowed.</small>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="alternatePhone">Alternate Phone</label>
+            <input id="alternatePhone" formControlName="alternatePhone" class="form-control" onkeypress="return event.charCode>=48 &&
+          event.charCode<=57"/>
+            <small class="text-danger" *ngIf="userForm.get('alternatePhone')?.touched && userForm.get('alternatePhone')?.hasError('maxlength')">Maximum 10 characters allowed.</small>
+          </div>
+        </div>
+      </div>
+
+      <div formArrayName="addresses">
+        <div *ngFor="let address of addresses.controls; let i = index" [formGroupName]="i" class="address-group">
+          <h4>Address {{i + 1}}</h4>
+          <div class="form-group-wrap">
+            <div class="form-group">
+              <label for="city">City</label>
+              <input id="city" formControlName="city" class="form-control"/>
+              <small class="text-danger" *ngIf="address.get('city')?.touched && address.get('city')?.hasError('required')">City is required.</small>
+            </div>
+            <div class="form-group">
+              <label for="state">State</label>
+              <input id="state" formControlName="state" class="form-control"/>
+              <small class="text-danger" *ngIf="address.get('state')?.touched && address.get('state')?.hasError('required')">State is required.</small>
+            </div>
+          </div>
+          <div class="form-group-wrap">
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input id="country" formControlName="country" class="form-control"/>
+              <small class="text-danger" *ngIf="address.get('country')?.touched && address.get('country')?.hasError('required')">Country is required.</small>
+            </div>
+            <div class="form-group">
+              <label for="zipCode">Zip Code</label>
+              <input id="zipCode" formControlName="zipCode" class="form-control"/>
+              <small class="text-danger" *ngIf="address.get('zipCode')?.touched && address.get('zipCode')?.hasError('required')">Zip Code is required.</small>
+            </div>
+          </div>
+
+          <button type="button" (click)="removeAddress(i)" *ngIf="addresses.length > 1">Remove Address</button>
+        </div>
+        <button type="button" (click)="addAddress()" *ngIf="addresses.length < 2">Add Address</button>
+      </div>
+
+      <div class="form-group">
+        <label for="isActive">Active</label>
+        <input id="isActive" type="checkbox" formControlName="isActive" class="form-check-input" (change)="onIsActiveChange($event)"/>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</section>
